@@ -67,3 +67,51 @@ moj-projekt-devops/
 └── requirements.txt          # Zależności i biblioteki Pythona wymagane przez aplikację
 
 ```
+## 🧩 Wymagania techniczne i endpointy
+
+Aplikacja została wyposażona w wymagane endpointy diagnostyczne oraz logikę biznesową (kalkulator), co pozwala w pełni zweryfikować jej poprawność działania:
+
+| Endpoint | Metoda HTTP | Opis działania |
+| :--- | :--- | :--- |
+| **`/health`** | GET | Endpoint diagnostyczny zwracający status zdrowia aplikacji (wykorzystywany m.in. przez AWS ECS / Load Balancer) |
+| **`/version`** | GET | Endpoint informujący o aktualnej wersji wdrożonego oprogramowania |
+| **`/calculate?a=X&b=Y`** | GET | Biznesowy endpoint kalkulatora wykonujący operację matematyczną na podanych parametrach |
+
+## 🏗️ Infrastruktura jako kod (Terraform)
+
+Cała infrastruktura w chmurze AWS została zdefiniowana w kodzie (katalog `terraform/main.tf`), co zapewnia powtarzalność i łatwość zarządzania środowiskiem. 
+
+Utworzone komponenty obejmują m.in.:
+* **Sieć (VPC):** Skonfigurowana sieć wirtualna z podsieciami publicznymi i prywatnymi, bramą sieciową (Internet Gateway) oraz tablicami routingu.
+* **Grupy bezpieczeństwa (Security Groups):** Reguły kontroli ruchu sieciowego dla Load Balancera oraz zadań ECS.
+* **Amazon ECR:** Prywatny rejestr kontenerów przechowujący obrazy aplikacji budowane przez pipeline.
+* **Amazon ECS (Fargate):** Klaster kontenerowy zarządzający uruchomionymi instancjami aplikacji w trybie bezserwerowym (Fargate).
+* **Application Load Balancer (ALB):** Komponent routujący ruch z internetu na odpowiednie porty i zadania w klastrze ECS.
+
+## 🔄 Pipeline CI/CD (GitHub Actions)
+
+Proces automatyzacji wdrożeń (`.github/workflows/deploy.yml`) dba o to, aby każda zmiana w kodzie była automatycznie testowana i wysyłana do chmury. Pipeline wykonuje się przy każdym `push` do gałęzi `main` i składa się z następujących kroków:
+
+1. **Checkout kodu:** Pobranie aktualnego stanu repozytorium do środowiska wykonawczego GitHub Actions.
+2. **Uwierzytelnianie w AWS:** Bezpieczne logowanie przy użyciu sekretów repozytorium (`AWS_ACCESS_KEY_ID` oraz `AWS_SECRET_ACCESS_KEY`) przypisanych do dedykowanego użytkownika z ograniczonymi uprawnieniami (`devuser`).
+3. **Logowanie do Amazon ECR:** Autoryzacja w prywatnym rejestrze kontenerów AWS.
+4. **Build & Push:** Skompilowanie obrazu Docker dla aplikacji i wysłanie go do Amazon Elastic Container Registry (ECR).
+5. **Deployment na Amazon ECS:** Odświeżenie definicji zadania (Task Definition) i wdrożenie najnowszej wersji aplikacji na klaster ECS.
+
+## 🚀 Instrukcja uruchomienia lokalnego i wdrażania
+
+### 1. Uruchomienie lokalne w kontenerze Docker
+Aby uruchomić i przetestować aplikację lokalnie na własnym komputerze:
+```bash
+# Zbudowanie obrazu Docker lokalnie
+docker build -t moj-projekt-app .
+
+# Uruchomienie kontenera w tle (mapowanie portu 80 na 80)
+docker run -d -p 80:80 --name moj-projekt-kontener moj-projekt-app
+```
+## 🔗 Publiczny Adres URL
+
+Wdrożona aplikacja jest w pełni dostępna z poziomu internetu pod publicznym adresem Application Load Balancera (ALB) w chmurze AWS:
+
+👉 **[http://moj-projekt-alb-1228346223.us-east-1.elb.amazonaws.com/calculate?a=5&b=10](http://moj-projekt-alb-1228346223.us-east-1.elb.amazonaws.com/calculate?a=5&b=10)**
+
