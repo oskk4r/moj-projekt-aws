@@ -44,3 +44,26 @@ Schemat przedstawia przepływ danych w procesie CI/CD oraz dystrybucję ruchu u�
                                                   │
                                                   ▼
                                        [ Publiczny URL / Użytkownik ]
+```
+
+## 📁 Struktura repozytorium
+
+Projekt posiada czytelną i uporządkowaną strukturę katalogów, co ułatwia zarządzanie kodem aplikacji, automatyzacją oraz infrastrukturą:
+
+```text
+moj-projekt-devops/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml        # Konfiguracja pipeline'u CI/CD (GitHub Actions)
+├── app/                      # Kod źródłowy aplikacji webowej
+│   └── main.py               # Główny plik aplikacji (endpointy /health, /version, /calculate)
+├── docker/                   # Pliki pomocnicze związane z konteneryzacją
+├── terraform/                # Infrastruktura jako kod (IaC)
+│   ├── main.tf               # Definicje zasobów AWS (ECS, ECR, ALB, VPC, Security Groups)
+│   └── variables.tf          # Zmienne konfiguracyjne dla Terraforma
+├── Dockerfile                # Instrukcja budowania obrazu kontenera aplikacji
+├── .dockerignore             # Pliki i foldery ignorowane podczas budowania Dockera
+├── .gitignore                # Pliki ignorowane przez system kontroli wersji Git
+└── requirements.txt          # Zależności i biblioteki Pythona wymagane przez aplikację
+
+```
