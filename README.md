@@ -113,5 +113,5 @@ docker run -d -p 80:80 --name moj-projekt-kontener moj-projekt-app
 
 Wdrożona aplikacja jest w pełni dostępna z poziomu internetu pod publicznym adresem Application Load Balancera (ALB) w chmurze AWS:
 
-👉 **[http://moj-projekt-alb-1228346223.us-east-1.elb.amazonaws.com/calculate?a=5&b=10](http://moj-projekt-alb-1228346223.us-east-1.elb.amazonaws.com/status)**
+👉 **[http://moj-projekt-alb-1228346223.us-east-1.elb.amazonaws.com/calculate?a=5&b=10](http://moj-projekt-alb-1228346223.us-east-1.elb.amazonaws.com/health)**
 
