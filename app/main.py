@@ -8,7 +8,7 @@ def health():
 
 @app.get("/version")
 def version():
-    return {"version": "1.1.0"}
+    return {"version": "1.2.0"}
 
 @app.get("/calculate")
 def calculate(a: int, b: int):
